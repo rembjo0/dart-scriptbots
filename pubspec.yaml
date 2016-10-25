@@ -1,6 +1,6 @@
 name: 'dart_scriptbots'
 version: 0.0.1
-description: An absolute bare-bones web app.
+description: Dart port of ScriptBots written originally by Andrej Karpathy
 author: Bjørn Vidar Remme <bvremme@gmail.com>
 #homepage: https://www.example.com
 
