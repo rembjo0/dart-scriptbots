@@ -1,4 +1,4 @@
-name: 'dart_scriptbots'
+name: 'scriptbots'
 version: 0.0.1
 description: Dart port of ScriptBots written originally by Andrej Karpathy
 author: Bjørn Vidar Remme <bvremme@gmail.com>
