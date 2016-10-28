@@ -1,11 +1,9 @@
-// Copyright (c) 2016, Bjørn Vidar Remme. All rights reserved. Use of this source code
-
-// is governed by a BSD-style license that can be found in the LICENSE file.
 
 import 'dart:html';
 import 'dart:math' as Math;
 import 'dart:svg';
 import 'package:scriptbots/dwraon_brain.dart';
+import 'package:scriptbots/randomization.dart';
 
 final int width = window.innerWidth;
 final int height = window.innerHeight;
@@ -83,34 +81,38 @@ class BrainVisualLayout {
 
     //CALC INPUTS
     for (int i = 0; i < numberOfInputs; i++) {
+      //print("i: ${i}");
       positions[i] = new Math.Point(nx, ny);
       ny += nodeDiameter + nodeSpacing;
     }
 
     int hiddenStartX = nodeDiameter + sectionSpacing;
-    int hiddenEndX = hiddenStartX;
+    int hiddenEndX = hiddenStartX + (hiddenRadius*2).toInt();
+
+    // CALC OUTPUTS
+    nx = hiddenEndX + sectionSpacing;
+    ny = nodeRadius + outputStartY;
+
+    for (int i = 0; i < numberOfOutputs; i++) {
+      //print("o: ${numberOfInputs + i}");
+      positions[numberOfInputs + i] = new Math.Point(nx, ny);
+      ny += nodeDiameter + nodeSpacing;
+    }
+
 
     if (numberOfHidden > 0) {
       int cx = hiddenStartX + hiddenRadius.toInt();
       int cy = hiddenCenterY;
-      hiddenEndX = cx + hiddenRadius.toInt();
 
       int j = 0;
-      for (int i = numberOfInputs; i < brainsize - numberOfOutputs; i++) {
+      for (int i = numberOfInputs + numberOfOutputs; i < brainsize; i++) {
+        //print("h: ${i}");
         positions[i] =
         new Math.Point(cx + hiddenPoints[j].x, cy + hiddenPoints[j].y);
         j++;
       }
     }
 
-    nx = hiddenEndX + sectionSpacing;
-    ny = nodeRadius + outputStartY;
-
-    for (int i = brainsize - numberOfOutputs; i < brainsize; i++) {
-      //print(i);
-      positions[i] = new Math.Point(nx, ny);
-      ny += nodeDiameter + nodeSpacing;
-    }
   }
 
 }
@@ -120,9 +122,17 @@ void main() {
 
   DivElement output = document.getElementById("output");
 
+  var brainsize = 50;
+  var connections = 4;
+  var numberOfInputs = 5;
+  var numberOfOutputs = 3;
 
   var brain = new DwraonBrain.random(
-      new DateTime.now().millisecondsSinceEpoch, 50, 4, 5, 3);
+      new Randomization(),
+      brainsize,
+      connections,
+      numberOfInputs,
+      numberOfOutputs);
 
   new Animation(output, brain).run(0);
 
@@ -166,7 +176,7 @@ class Animation {
       }
 
       for (int i=0; i<inputs.length; i++) {
-        inputs[i] = this.brain.rand(0.0, 1.0);
+        inputs[i] = brain.random.next();
       }
 
       brain.tick(inputs, outputs);
@@ -199,13 +209,14 @@ void renderBrain(SvgElement svg, DwraonBrain brain) {
   v.recalc();
 
   for (int i = 0; i < v.brainsize; i++) {
+    //print(" -- ${i}");
     Box box = brain.boxes[i];
 
     int color = Math.min(255, (box.out*255.0).abs().toInt());
     String fill = "rgb(${color},${color},0)";
 
     if (i >= v.numberOfInputs) {
-      if (i < v.brainsize - v.numberOfOutputs) {
+      if (i >= v.numberOfInputs + v.numberOfOutputs) {
         fill = "rgb(0, ${color}, 0)";
       } else {
         fill = "rgb(${color}, 0, 0)";

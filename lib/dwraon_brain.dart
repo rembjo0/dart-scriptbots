@@ -1,7 +1,6 @@
-library dwraonbrain;
 
 import 'brain.dart';
-
+import 'randomization.dart';
 
 /**
  * Damped Weighted Recurrent AND/OR Network brain implementation ported from
@@ -49,19 +48,19 @@ class Box {
 
     //constructor
     for (int i = 0; i < brain.connections; i++) {
-      b.w[i] = brain.rand(0.1, 2.0);
-      b.id[i] = brain.randi(0, brain.brainsize);
+      b.w[i] = brain.random.between(0.1, 2.0);
+      b.id[i] = brain.random.nextInt(brain.brainsize);
 
       //20% of the brain AT LEAST should connect to input.
-      if (brain.rand(0.0, 1.0) < 0.2)
-        b.id[i] = brain.randi(0, brain.numberOfInputs);
+      if (brain.random.bet(0.2))
+        b.id[i] = brain.random.nextInt(brain.numberOfInputs);
 
-      b.notted[i] = brain.rand(0.0, 1.0) < 0.5;
+      b.notted[i] = brain.random.fiftyFifty();
     }
 
-    b.type = (brain.rand(0.0, 1.0) > 0.5) ? (0) : (1);
-    b.kp = brain.rand(0.8, 1.0);
-    b.bias = brain.rand(-1.0, 1.0);
+    b.type = brain.random.fiftyFifty() ? (0) : (1);
+    b.kp = brain.random.between(0.8, 1.0);
+    b.bias = brain.random.between(-1.0, 1.0);
 
     return b;
   }
@@ -76,12 +75,13 @@ class DwraonBrain extends Brain<DwraonBrain> {
   List<Box> boxes;
 
 
-  DwraonBrain._blank(int seed,
+  DwraonBrain._blank(Randomization random,
       int brainsize,
       int connections,
       int numberOfInputs,
       int numberOfOutputs)
-      : super(seed, brainsize, connections, numberOfInputs, numberOfOutputs) {
+      :
+        super(random, brainsize, connections, numberOfInputs, numberOfOutputs) {
     assert(numberOfInputs > 0);
     assert(numberOfOutputs > 0);
     assert(brainsize >= numberOfInputs + numberOfOutputs);
@@ -94,14 +94,14 @@ class DwraonBrain extends Brain<DwraonBrain> {
     id = "[${_c}]";
   }
 
-  factory DwraonBrain.random(int seed,
+  factory DwraonBrain.random(Randomization random,
       int brainsize,
       int connections,
       int numberOfInputs,
       int numberOfOutputs)
   {
     DwraonBrain brain = new DwraonBrain._blank(
-        seed,
+        random,
         brainsize,
         connections,
         numberOfInputs,
@@ -115,7 +115,7 @@ class DwraonBrain extends Brain<DwraonBrain> {
       //Here the first half of the brain points to the inputs
       if (i < brainsize / 2) {
         for (int j = 0; j < connections; j++) {
-          brain.boxes[i].id[j] = brain.randi(0, numberOfInputs);
+          brain.boxes[i].id[j] = random.betweenInt(0, numberOfInputs);
         }
       }
     }
@@ -125,7 +125,7 @@ class DwraonBrain extends Brain<DwraonBrain> {
 
   DwraonBrain copy() {
     DwraonBrain b = new DwraonBrain._blank(
-        seed, brainsize, connections, numberOfInputs, numberOfOutputs);
+        random, brainsize, connections, numberOfInputs, numberOfOutputs);
 
     b.id = id;
 
@@ -149,14 +149,14 @@ class DwraonBrain extends Brain<DwraonBrain> {
       //box.out = 0.0;
       //box.target = 0.0;
 
-      box.bias = fiftyFifty() ? boxes[i].bias : other.bias;
-      box.kp = fiftyFifty() ? boxes[i].kp : other.kp;
-      box.type = fiftyFifty() ? boxes[i].type : other.type;
+      box.bias = random.fiftyFifty() ? boxes[i].bias : other.bias;
+      box.kp = random.fiftyFifty() ? boxes[i].kp : other.kp;
+      box.type = random.fiftyFifty() ? boxes[i].type : other.type;
 
       for (int j = 0; j < boxes[i].id.length; j++) {
-        box.id[j] = fiftyFifty() ? boxes[i].id[j] : other.id[j];
-        box.notted[j] = fiftyFifty() ? boxes[i].notted[j] : other.notted[j];
-        box.w[j] = fiftyFifty() ? boxes[i].w[j] : other.w[j];
+        box.id[j] = random.fiftyFifty() ? boxes[i].id[j] : other.id[j];
+        box.notted[j] = random.fiftyFifty() ? boxes[i].notted[j] : other.notted[j];
+        box.w[j] = random.fiftyFifty() ? boxes[i].w[j] : other.w[j];
       }
     }
 
@@ -219,15 +219,15 @@ class DwraonBrain extends Brain<DwraonBrain> {
 
     //finally set out[] to the last few boxes output
     for (int i = 0; i < numberOfOutputs; i++) {
-      outputs[i] = boxes[brainsize - 1 - i].out;
+      outputs[i] = boxes[numberOfInputs + i].out;
     }
   }
 
   void mutate(final double probability, final double adjustFactor) {
     int mc = 0;
     boxes.forEach((box) {
-      if (rand(0.0, 1.0) < probability * 3) {
-        box.bias += rand(0.0, adjustFactor);
+      if (random.bet(probability * 3)) {
+        box.bias +=  random.between(0.0, adjustFactor);
         //a2.mutations.push_back("bias jiggled\n");
         mc++;
       }
@@ -240,31 +240,31 @@ class DwraonBrain extends Brain<DwraonBrain> {
       //  mc++;
       //}
 
-      if (rand(0.0, 1.0) < probability * 3) {
-        int rc = randi(0, connections);
-        box.w[rc] += rand(0.0, adjustFactor);
+      if (random.bet(probability * 3)) {
+        int rc = random.betweenInt(0, connections);
+        box.w[rc] += random.between(0.0, adjustFactor);
         if (box.w[rc] < 0.01) box.w[rc] = 0.01;
         mc++;
         //a2.mutations.push_back("weight jiggled\n");
       }
 
       //more unlikely changes here
-      if (rand(0.0, 1.0) < probability) {
-        int rc = randi(0, connections);
-        int ri = randi(0, brainsize);
+      if (random.bet(probability)) {
+        int rc = random.betweenInt(0, connections);
+        int ri = random.betweenInt(0, brainsize);
         box.id[rc] = ri;
         mc++;
         //a2.mutations.push_back("connectivity changed\n");
       }
 
-      if (rand(0.0, 1.0) < probability) {
-        int rc = randi(0, connections);
+      if (random.bet(probability)) {
+        int rc = random.betweenInt(0, connections);
         box.notted[rc] = !box.notted[rc];
         mc++;
         //a2.mutations.push_back("notted was flipped\n");
       }
 
-      if (rand(0.0, 1.0) < probability) {
+      if (random.bet(probability)) {
         box.type = 1 - box.type;
         mc++;
         //a2.mutations.push_back("type of a box was changed\n");

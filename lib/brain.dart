@@ -1,26 +1,20 @@
-library brain;
 
-import 'dart:math';
-
+import 'randomization.dart';
 
 abstract class Brain<T extends Brain> {
 
-  final int seed;
+  final Randomization random;
   final int brainsize;
   final int connections;
   final int numberOfInputs;
   final int numberOfOutputs;
 
-  final Random _rand;
-
-  Brain(int seed,
+  Brain(this.random,
       this.brainsize,
       this.connections,
       this.numberOfInputs,
-      this.numberOfOutputs)
-      :
-        this.seed = seed,
-        this._rand = new Random(seed) {
+      this.numberOfOutputs) {
+    assert(random != null);
     assert(brainsize > 0);
     assert(connections > 0);
     assert(brainsize > connections); //should be much greater actually
@@ -36,19 +30,5 @@ abstract class Brain<T extends Brain> {
 
   T crossover(T otherBrain);
 
-
-  double rand(double min, double max) {
-    assert(max > min);
-    return min + (_rand.nextDouble() * (max - min));
-  }
-
-  bool fiftyFifty() {
-    return _rand.nextDouble() < 0.5;
-  }
-
-  int randi(min, max) {
-    assert(max > min);
-    return min + (_rand.nextInt(max - min));
-  }
 
 }
