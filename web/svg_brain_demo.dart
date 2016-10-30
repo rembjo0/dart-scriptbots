@@ -191,15 +191,6 @@ class Animation {
 
 void renderBrain(SvgElement svg, DwraonBrain brain) {
 
-  var svgContent = new SvgElement.svg('''
-<g id="demoSvg" transform="rotate(0 50 50)" >
-<line id="line1" x1="0" y1="0" x2="200" y2="200" style="stroke:rgb(255,0,0);stroke-width:2" />
-<circle cx="50" cy="50" r="40" style="stroke:green;stroke-width:4;fill:yellow"/>
-<text x="15" y="54" font-size="20" style="stroke:black">Hello!</text>
-</g>
- ''');
-  //svg.append(svgContent);
-
   var brainSvg = new SvgElement.svg('''
   <g id="brainSvg" transform="translate(25,10) scale(1, 1)"/>
   ''');
