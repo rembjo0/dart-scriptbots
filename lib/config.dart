@@ -7,8 +7,6 @@ const int CONNS = 4;
 
 const int WIDTH = 6000;  //width and height of simulation
 const int HEIGHT = 3000;
-const int WWIDTH = 1600;  //window width and height
-const int WHEIGHT = 900;
 
 const int CZ = 50; //cell size in pixels, for food squares. Should divide well into Width Height
 

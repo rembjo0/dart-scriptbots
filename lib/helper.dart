@@ -4,13 +4,14 @@ import 'package:quiver/core.dart';
 import 'package:vector_math/vector_math.dart';
 
 /**
- * cap value between 0 and 1
+ * cap double value between 0 and 1
  */
-num cap(num a){
-  if (a<0) return 0;
-  if (a>1) return 1;
+double cap(double a){
+  if (a<0.0) return 0.0;
+  if (a>1.0) return 1.0;
   return a;
 }
+
 /**
  * From: https://github.com/dart-lang/collection/issues/29
  */

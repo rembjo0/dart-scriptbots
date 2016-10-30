@@ -1,11 +1,10 @@
-
 import 'dart:math' as Math;
 import 'package:vector_math/vector_math.dart';
 import 'config.dart' as config;
 import 'brain.dart';
 import 'randomization.dart';
 import 'helper.dart';
-
+import 'dwraon_brain.dart';
 
 class Agent {
 
@@ -77,9 +76,10 @@ class Agent {
   List<String> mutations;
 
   Agent(this.random) {
-    var rPos = (num n) => random.betweenInt(0.0, n.toDouble());
+    var rPos = (num n) => random.betweenInt(0, n);
 
-    pos = new Vector2(rPos(config.WIDTH), rPos(config.HEIGHT));
+    pos =
+    new Vector2(rPos(config.WIDTH).toDouble(), rPos(config.HEIGHT).toDouble());
     angle = random.between(-Math.PI, Math.PI);
     health = 1.0 + random.between(0.0, 0.1);
     age = 0;
@@ -130,6 +130,10 @@ class Agent {
       eyefov[i] = random.between(0.5, 2.0);
       eyedir[i] = random.between(0.0, 2 * Math.PI);
     }
+
+    brain = new DwraonBrain.random(
+        random, config.BRAINSIZE, config.CONNS, config.INPUTSIZE,
+        config.OUTPUTSIZE);
   }
 
   void printSelf() {
@@ -138,7 +142,7 @@ class Agent {
   }
 
   //for drawing purposes
-  void initEvent(double size, r, double g, double b) {
+  void initEvent(double size, double r, double g, double b) {
     indicator = size;
     ir = r;
     ig = g;

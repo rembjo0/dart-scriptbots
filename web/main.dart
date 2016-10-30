@@ -1,5 +1,9 @@
 
+import 'dart:async';
 import 'dart:html';
+
+import 'package:scriptbots/view.dart';
+import 'package:scriptbots/world.dart';
 
 void main() {
 
@@ -7,33 +11,39 @@ void main() {
   CanvasElement mainCanvas = querySelector('#mainCanvas');
   CanvasRenderingContext2D ctx = mainCanvas.getContext('2d');
 
+  View view = new View(ctx);
+
   var resizeToWindow = () {
     mainCanvas.width = window.innerWidth;
     mainCanvas.height = window.innerHeight;
-  };
-
-  var clearScreen = () {
-    ctx.save();
-    ctx.setFillColorRgb(200, 200, 200);
-    ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-    //ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-    ctx.beginPath();
-    ctx.setStrokeColorRgb(0, 0, 255);
-    ctx.lineWidth = 5;
-    ctx.moveTo(0, 0);
-    ctx.lineTo(mainCanvas.width, mainCanvas.height);
-    ctx.stroke();
-    ctx.restore();
+    view.canvasResize(mainCanvas.width, mainCanvas.height);
   };
 
   window.onResize.listen((e) {
     resizeToWindow();
-    clearScreen();
   });
 
-
   resizeToWindow();
-  clearScreen();
+
+  World world = new World.create();
+
+
+  void gameLoop(time) {
+    bool drawFood = true;
+
+    if (!drawFood) {
+      view.clearScreen();
+    }
+
+    world.update();
+    world.draw(view, drawFood);
+    window.requestAnimationFrame(gameLoop);
+    //new Future.delayed(new Duration(milliseconds: 100), () => window.requestAnimationFrame(gameLoop));
+  }
+
+
+
+  window.requestAnimationFrame(gameLoop);
 }
 
 

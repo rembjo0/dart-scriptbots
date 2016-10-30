@@ -176,7 +176,12 @@ class DwraonBrain extends Brain<DwraonBrain> {
 
     //take first few boxes and set their out to in[].
     for (int i = 0; i < numberOfInputs; i++) {
-      boxes[i].out = inputs[i];
+      try {
+        boxes[i].out = inputs[i];
+      } catch (e) {
+        print("ERROR: Index ${i} -  ${inputs[i]} -  ${inputs}");
+        throw e;
+      }
     }
 
     //then do a dynamics tick and set all targets

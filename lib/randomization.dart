@@ -35,7 +35,7 @@ class Randomization {
   }
 
   /** [min, max) */
-  int betweenInt(min, max) {
+  int betweenInt(int min, int max) {
     assert(max > min);
     return min + (_rand.nextInt(max - min));
   }

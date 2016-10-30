@@ -15,6 +15,9 @@ class World {
   List<int> numHerbivore;
   int ptr;
 
+  factory World.create([seed]) {
+    return new World(new Randomization(seed));
+  }
 
   World(this.random) {
     assert(random != null);
@@ -164,8 +167,8 @@ class World {
                     config.REPMULT * (1 - a.herbivore) * (1 - a.herbivore) /
                         Math.pow(numaround, 1.25) *
                         agemult; //good job, can use spare parts to make copies
-                if (a.health > 2) a.health = 2; //cap it!
-                a.initEvent(30.0, 1, 1.0, 1.0); //white means they ate! nice
+                if (a.health > 2) a.health = 2.0; //cap it!
+                a.initEvent(30.0, 1.0, 1.0, 1.0); //white means they ate! nice
               }
             }
           }
@@ -460,6 +463,7 @@ class World {
       a.inputs[22] = cap(r[3]);
       a.inputs[23] = cap(g[3]);
       a.inputs[24] = cap(b[3]);
+
     });
   }
 
@@ -544,7 +548,7 @@ class World {
 
     //process giving and receiving of food
     agents.forEach((a) {
-      a.dfood = 0;
+      a.dfood = 0.0;
     });
 
     agents.forEach((giver) {
@@ -598,9 +602,9 @@ class World {
               other.health -= DMG;
 
               if (agent.health > 2) agent.health = 2; //cap health at 2
-              agent.spikeLength = 0; //retract spike back down
+              agent.spikeLength = 0.0; //retract spike back down
 
-              agent.initEvent(40 * DMG, 1, 1.0,
+              agent.initEvent(40 * DMG, 1.0, 1.0,
                   0.0); //yellow event means bot has spiked other bot. nice!
 
               Vector2 v2 = new Vector2(1.0, 0.0);
@@ -610,7 +614,7 @@ class World {
               if (adiff.abs() < Math.PI / 2) {
                 //this was attack from the back. Retract spike of the other agent (startle!)
                 //this is done so that the other agent cant right away "by accident" attack this agent
-                other.spikeLength = 0;
+                other.spikeLength = 0.0;
               }
 
               other.spiked =
@@ -653,7 +657,7 @@ class World {
     if (random.bet(0.04)) MR = MR * random.between(1.0, 10.0);
     if (random.bet(0.04)) MR2 = MR2 * random.between(1.0, 10.0);
 
-    agent.initEvent(30.0, 0, 0.8, 0.0); //green event means agent reproduced.
+    agent.initEvent(30.0, 0.0, 0.8, 0.0); //green event means agent reproduced.
     for (int i = 0; i < config.BABIES; i++) {
       Agent a2 = agent.reproduce(MR, MR2);
       a2.id = idcounter;
