@@ -1,48 +1,112 @@
 import 'dart:html';
 import 'dart:math';
 import 'agent.dart';
+import 'foodmatrix.dart';
 
 import 'config.dart' as config;
 
+class _OffscreenCanvas {
+  CanvasElement canvas;
+  CanvasRenderingContext2D ctx;
+
+  _OffscreenCanvas ({int width, int height}) {
+    canvas = new CanvasElement(width: width, height: height);
+    ctx = canvas.getContext('2d');
+  }
+
+  int get width => canvas.width;
+  int get height => canvas.height;
+
+  void canvasResize(int width, int height) {
+    canvas.width = width;
+    canvas.height = height;
+  }
+}
+
+
+class _FoodCanvas extends _OffscreenCanvas {
+
+  bool redrawAll = true;
+
+  void canvasResize(int width, int height) {
+    redrawAll = true;
+    super.canvasResize(width, height);
+  }
+}
+
 class View {
+
+  final CanvasRenderingContext2D ctx;
 
   int _width = 0;
   int _height = 0;
 
-  final CanvasRenderingContext2D ctx;
+  _FoodCanvas foodCanvas;
 
-  View(this.ctx);
+  View(this.ctx) {
+    foodCanvas = new _FoodCanvas();
+  }
 
   void canvasResize(int width, int height) {
     _width = width;
     _height = height;
+    foodCanvas.canvasResize(_width, _height);
   }
 
-  void _setViewport() {
+  void _setViewportOnContex(var ctx) {
     ctx.scale(_width / config.WIDTH, _height / config.HEIGHT);
   }
 
-  void drawFood(int column, int row, double quantity) {
-    ctx.save();
-    try {
-      _setViewport();
-      var f = (255.0*(1.0-quantity)).toInt();
-      ctx.setFillColorRgb(f, f, f);
-      ctx.fillRect(column*config.CZ, row*config.CZ, config.CZ, config.CZ);
-      ctx.stroke();
-    } finally {
-      ctx.restore();
-    }
+  void _setViewport() {
+    _setViewportOnContex(ctx);
   }
 
-  drawAgent(Agent agent) {
+  void drawFood(FoodMatrix food) {
+
+    var renderCell = (x, y, q) {
+      double v = 0.5 * q / config.FOODMAX;
+      var f = (255.0*(1.0-v)).toInt();
+      foodCanvas.ctx.setFillColorRgb(f, f, f);
+      //foodCanvas.ctx.setStrokeColorRgb(0, 0, 255);
+      foodCanvas.ctx.fillRect(x*config.CZ, y*config.CZ, config.CZ, config.CZ);
+    };
+
+    foodCanvas.ctx.save();
+    try {
+      _setViewportOnContex(foodCanvas.ctx);
+
+      if (foodCanvas.redrawAll || food.allDirty) {
+        foodCanvas.ctx.setFillColorRgb(255, 255, 255);
+        foodCanvas.ctx.fillRect(0, 0, foodCanvas.width, foodCanvas.height);
+        for (int c=0; c<food.numColumns; c++)
+            for (int r=0; r<food.numRows; r++)
+                renderCell(c, r, food.get(c, r));
+
+        food.clearAllDirty();
+      } else {
+      for (var cell in food.takeDirtyCells()) {
+        renderCell(cell.x, cell.y, food.get(cell.x, cell.y));
+      }}
+
+      foodCanvas.redrawAll = false;
+    } finally {
+      foodCanvas.ctx.restore();
+    }
+
+    ctx.drawImage(foodCanvas.canvas, 0, 0);
+  }
+
+  void drawAgents(List<Agent> agents) {
     ctx.save();
     try {
       _setViewport();
-      ctx.beginPath();
-      ctx.setFillColorRgb(255, 0, 0);
-      ctx.arc(agent.pos.x, agent.pos.y, 10.0, 0.0, 2 * PI);
-      ctx.stroke();
+      ctx.setFillColorRgb(0, 0, 255);
+      //ctx.setStrokeColorRgb(0, 255, 255);
+      for (var agent in agents) {
+        ctx.beginPath();
+        ctx.arc(agent.pos.x, agent.pos.y, config.BOTRADIUS, 0.0, 2 * PI);
+        ctx.fill();
+      }
     } finally {
       ctx.restore();
     }

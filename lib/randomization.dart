@@ -30,13 +30,13 @@ class Randomization {
 
   /** [min, max) */
   double between(double min, double max) {
-    assert(max > min);
+    assert(max >= min);
     return min + (_rand.nextDouble() * (max - min));
   }
 
   /** [min, max) */
   int betweenInt(int min, int max) {
-    assert(max > min);
+    assert(max >= min);
     return min + (_rand.nextInt(max - min));
   }
 

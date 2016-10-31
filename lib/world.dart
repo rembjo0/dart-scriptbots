@@ -5,7 +5,7 @@ import 'config.dart' as config;
 import 'helper.dart';
 import 'randomization.dart';
 import 'view.dart';
-
+import 'foodmatrix.dart';
 
 class World {
 
@@ -31,7 +31,7 @@ class World {
 
     int numColumns = config.WIDTH ~/ config.CZ;
     int numRows = config.HEIGHT ~/ config.CZ;
-    food = new Array2D(numColumns, numRows);
+    food = new FoodMatrix(numColumns, numRows);
 
     modcounter = 0;
     current_epoch = 0;
@@ -219,19 +219,12 @@ class World {
   }
 
   void draw(View view, bool drawfood) {
-    //draw food
+
     if (drawfood) {
-      for (int i = 0; i < FW; i++) {
-        for (int j = 0; j < FH; j++) {
-          double f = 0.5 * food.get(i, j) / config.FOODMAX;
-          view.drawFood(i, j, f);
-        }
-      }
+          view.drawFood(food);
     }
 
-    //draw all agents
-    agents.forEach((a) => view.drawAgent(a));
-
+    view.drawAgents(agents);
     view.drawMisc();
   }
 
@@ -601,7 +594,7 @@ class World {
 
               other.health -= DMG;
 
-              if (agent.health > 2) agent.health = 2; //cap health at 2
+              if (agent.health > 2) agent.health = 2.0; //cap health at 2
               agent.spikeLength = 0.0; //retract spike back down
 
               agent.initEvent(40 * DMG, 1.0, 1.0,
@@ -684,6 +677,6 @@ class World {
   int fx;
   int fy;
 
-  Array2D<double> food;
+  FoodMatrix food;
   bool CLOSED; //if environment is closed, then no random bots are added per time interval
 }

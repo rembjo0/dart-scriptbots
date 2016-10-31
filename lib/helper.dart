@@ -26,12 +26,12 @@ class Pair<T1,T2> {
   int get hashCode => hash2(first.hashCode,second.hashCode);
 }
 
-class Array2D<T> {
+class Array2<T> {
   final int numColumns;
   final int numRows;
   final List<T> _storage;
 
-  Array2D (int numColumns, int numRows)
+  Array2 (int numColumns, int numRows)
       : numColumns = numColumns,
         numRows = numRows,
         _storage = _initStorage(numColumns, numRows);
@@ -80,7 +80,7 @@ void main () {
   print ("-- rotated ${v}");
 
 
-  Array2D<String> a2d = new Array2D(5, 3);
+  Array2<String> a2d = new Array2(5, 3);
 
   for (int r=0; r<a2d.numRows; r++) {
     for (int c=0; c<a2d.numColumns; c++) {
