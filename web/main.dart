@@ -23,6 +23,37 @@ void main() {
     resizeToWindow();
   });
 
+  window.onMouseWheel.listen((WheelEvent e) {
+    double direction = e.deltaY < 0.0 ? 1.0 : -1.0;
+    view.zoomFactor += 0.1 * direction;
+  });
+
+
+  Point dragStart = null;
+  DateTime dragStartTime = new DateTime.now();
+  window.onMouseDown.listen((MouseEvent e) {
+    if (e.button == 0) dragStart = e.client;
+  });
+
+  window.onMouseUp.listen((MouseEvent e) {
+    if (e.button == 0 && dragStart != null) {
+      view.translate(dragStart, e.client);
+      dragStart = null;
+    }
+  });
+
+  window.onMouseMove.listen((MouseEvent e) {
+    if (dragStart != null) {
+      var now = new DateTime.now();
+      if (now.difference(dragStartTime).inMilliseconds > 100) {
+        dragStartTime = now;
+        view.translate(dragStart, e.client);
+        dragStart = e.client;
+      }
+    }
+  });
+
+
   resizeToWindow();
 
   World world = new World.create();
