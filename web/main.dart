@@ -7,6 +7,7 @@ import 'package:scriptbots/world.dart';
 void main() {
 
   HtmlElement fpsOuput = querySelector("#fpsOut");
+  HtmlElement simSpeedOutput = querySelector("#simSpeedOutput");
 
   CanvasElement mainCanvas = querySelector('#mainCanvas');
   CanvasRenderingContext2D ctx = mainCanvas.getContext('2d');
@@ -54,6 +55,23 @@ void main() {
     }
   });
 
+  int simSpeed = 1;
+  window.onKeyUp.listen((KeyboardEvent e) {
+    switch (e.which) {
+      case 33:
+        if (simSpeed < 16) simSpeed *= 2;
+        break;
+      case 34:
+        if (simSpeed > 1) simSpeed ~/= 2;
+        break;
+      case 36:
+        simSpeed = 1;
+        break;
+    }
+
+    simSpeedOutput.text = "x${simSpeed}";
+  });
+
 
   resizeToWindow();
 
@@ -87,7 +105,10 @@ void main() {
       view.clearScreen();
     }
 
-    world.update();
+    for (int i=0; i<simSpeed; i++) {
+      world.update();
+    }
+
     world.draw(view, drawFood);
 
     updateFPS();
