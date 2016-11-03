@@ -48,7 +48,7 @@ class _FoodCanvas extends _OffscreenCanvas {
   }
 }
 
-
+//typedef void CtxFunc(CanvasRenderingContext2D ctx);
 
 class View {
 
@@ -57,6 +57,7 @@ class View {
   int _width = 0;
   int _height = 0;
 
+  double _scale = 1.0;
   double _zoomFactor = 1.0;
   int    _translateX = 0;
   int    _translateY = 0;
@@ -69,28 +70,32 @@ class View {
 
 
   void translate(Point start, Point end) {
-    _translateX += (end.x - start.x);
-    _translateY += (end.y - start.y);
+     Point t = screenToScene(end) - screenToScene(start);
+    _translateX += t.x;
+    _translateY += t.y;
     _clearAndRedrawAll();
   }
 
+  void _updateScale () {
+    var viewportScale = min(_width / config.WIDTH, _height / config.HEIGHT);
+    _scale = _zoomFactor * viewportScale;
+  }
 
   double get zoomFactor => _zoomFactor;
 
   void set zoomFactor(double f) {
     if (f == _zoomFactor) return;
 
-    //how much does this affect translate? Want to keep center.
-    num cw = (_width)/_zoomFactor;
-    num ch = (_height)/_zoomFactor;
+    var screenCenter = new Point(_width~/2, _height~/2);
+    Point<int> oldCenter = screenToScene(screenCenter);
 
-    num cw2 = (_width)/f;
-    num ch2 = (_height)/f;
+    _zoomFactor = max(0.1, f);
+    _updateScale();
 
-    _translateX -= (cw-cw2).toInt();
-    _translateY -= (ch-ch2).toInt();
+    Point<int> newCenter = screenToScene(screenCenter);
 
-    _zoomFactor = f;
+    _translateX -= oldCenter.x-newCenter.x;
+    _translateY -= oldCenter.y-newCenter.y;
 
     _clearAndRedrawAll();
   }
@@ -104,19 +109,31 @@ class View {
   void canvasResize(int width, int height) {
     _width = width;
     _height = height;
+    _updateScale();
     foodCanvas.canvasResize(_width, _height);
   }
 
+  Point<int> screenToScene(Point p) {
+    double x = (p.x/_scale) -_translateX;
+    double y = (p.y/_scale) - _translateY;
+    return new Point(x.toInt(), y.toInt());
+  }
+
+  Point<int> sceneToScreen(Point p) {
+    double x = (p.x+_translateX)*_scale;
+    double y = (p.y+_translateY)*_scale;
+    return new Point(x.toInt(), y.toInt());
+  }
 
   void _setViewportOnContex(CanvasRenderingContext2D ctx) {
-    var viewportScale = min(_width / config.WIDTH, _height / config.HEIGHT);
-    ctx.scale(_zoomFactor * viewportScale, _zoomFactor * viewportScale);
+    ctx.scale(_scale, _scale);
     ctx.translate(_translateX, _translateY);
   }
 
   void _setViewport() {
     _setViewportOnContex(ctx);
   }
+
 
   void drawFood(FoodMatrix food) {
     var renderCell = (x, y, q) {
@@ -195,6 +212,7 @@ class View {
       ctx.restore();
     }
   }
+
 
 }
 

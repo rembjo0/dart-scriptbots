@@ -25,7 +25,8 @@ void main() {
 
   window.onMouseWheel.listen((WheelEvent e) {
     double direction = e.deltaY < 0.0 ? 1.0 : -1.0;
-    view.zoomFactor += 0.1 * direction;
+    var f = view.zoomFactor * 0.2;
+    view.zoomFactor += f * direction;
   });
 
 
@@ -94,8 +95,6 @@ void main() {
     window.requestAnimationFrame(gameLoop);
     //new Future.delayed(new Duration(milliseconds: 100), () => window.requestAnimationFrame(gameLoop));
   }
-
-
 
   window.requestAnimationFrame(gameLoop);
 }
