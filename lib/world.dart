@@ -486,7 +486,6 @@ class World {
     //#pragma omp parallel for
     agents.forEach((a) {
       Vector2 v = new Vector2(config.BOTRADIUS / 2, 0.0);
-      //FIXME PORT : why PI/2 here?
       v.postmultiply(new Matrix2.rotation(a.angle + Math.PI / 2));
 
       Vector2 w1p = a.pos + v; //wheel positions

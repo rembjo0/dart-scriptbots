@@ -90,7 +90,11 @@ class DwraonBrain extends Brain<DwraonBrain> {
 
     boxes = new List(brainsize);
 
-    _c++;
+    _assignNewId();
+  }
+
+  void _assignNewId() {
+     _c++;
     id = "[${_c}]";
   }
 
@@ -127,7 +131,7 @@ class DwraonBrain extends Brain<DwraonBrain> {
     DwraonBrain b = new DwraonBrain._blank(
         random, brainsize, connections, numberOfInputs, numberOfOutputs);
 
-    b.id = id;
+    //b.id = id;
 
     for (int i = 0; i < boxes.length; i++) {
       b.boxes[i] = boxes[i].copy();
@@ -139,7 +143,9 @@ class DwraonBrain extends Brain<DwraonBrain> {
   DwraonBrain crossover(DwraonBrain otherBrain) {
     DwraonBrain newBrain = copy();
 
-    newBrain.id = "[${id}+${otherBrain.id}]";
+   // print("-- crossover ${id} + ${otherBrain.id} --> ${newBrain.id}");
+
+    //newBrain.id = "[${id}+${otherBrain.id}]";
     for (int i = 0; i < boxes.length; i++) {
       var box = newBrain.boxes[i];
       var other = otherBrain.boxes[i];
@@ -276,7 +282,7 @@ class DwraonBrain extends Brain<DwraonBrain> {
       }
     });
 
-    if (mc > 0) id = "${id}!${mc}";
+    //if (mc > 0) id = "${id}!${mc}";
   }
 
 
