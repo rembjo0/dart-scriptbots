@@ -52,6 +52,7 @@ class Agent {
 
   double give; //is this agent attempting to give food to other agent?
 
+  static int _nextId = 0;
   int id;
 
   //inherited stuff
@@ -108,7 +109,7 @@ class Agent {
             + (1 - herbivore) *
             random.between(config.REPRATEC - 0.1, config.REPRATEC + 0.1);
 
-    id = 0;
+    id = _nextId++;
 
     smellmod = random.between(0.1, 0.5);
     soundmod = random.between(0.2, 0.6);

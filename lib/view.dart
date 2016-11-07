@@ -59,8 +59,8 @@ class View {
 
   double _scale = 1.0;
   double _zoomFactor = 1.0;
-  int    _translateX = 0;
-  int    _translateY = 0;
+  int _translateX = 0;
+  int _translateY = 0;
 
   _FoodCanvas foodCanvas;
 
@@ -70,13 +70,13 @@ class View {
 
 
   void translate(Point start, Point end) {
-     Point t = screenToScene(end) - screenToScene(start);
+    Point t = screenToScene(end) - screenToScene(start);
     _translateX += t.x;
     _translateY += t.y;
     _clearAndRedrawAll();
   }
 
-  void _updateScale () {
+  void _updateScale() {
     var viewportScale = min(_width / config.WIDTH, _height / config.HEIGHT);
     _scale = _zoomFactor * viewportScale;
   }
@@ -86,7 +86,7 @@ class View {
   void set zoomFactor(double f) {
     if (f == _zoomFactor) return;
 
-    var screenCenter = new Point(_width~/2, _height~/2);
+    var screenCenter = new Point(_width ~/ 2, _height ~/ 2);
     Point<int> oldCenter = screenToScene(screenCenter);
 
     _zoomFactor = max(0.1, f);
@@ -94,13 +94,13 @@ class View {
 
     Point<int> newCenter = screenToScene(screenCenter);
 
-    _translateX -= oldCenter.x-newCenter.x;
-    _translateY -= oldCenter.y-newCenter.y;
+    _translateX -= oldCenter.x - newCenter.x;
+    _translateY -= oldCenter.y - newCenter.y;
 
     _clearAndRedrawAll();
   }
 
-  void _clearAndRedrawAll () {
+  void _clearAndRedrawAll() {
     foodCanvas.redrawAll = true;
     foodCanvas.clear();
     clearScreen();
@@ -114,14 +114,14 @@ class View {
   }
 
   Point<int> screenToScene(Point p) {
-    double x = (p.x/_scale) -_translateX;
-    double y = (p.y/_scale) - _translateY;
+    double x = (p.x / _scale) - _translateX;
+    double y = (p.y / _scale) - _translateY;
     return new Point(x.toInt(), y.toInt());
   }
 
   Point<int> sceneToScreen(Point p) {
-    double x = (p.x+_translateX)*_scale;
-    double y = (p.y+_translateY)*_scale;
+    double x = (p.x + _translateX) * _scale;
+    double y = (p.y + _translateY) * _scale;
     return new Point(x.toInt(), y.toInt());
   }
 
@@ -181,9 +181,11 @@ class View {
     ctx.save();
     try {
       _setViewport();
-      ctx.setFillColorRgb(0, 0, 255);
       //ctx.setStrokeColorRgb(0, 255, 255);
       for (var agent in agents) {
+        ctx.setFillColorRgb(
+            (agent.red * 200.0).toInt(), (agent.gre * 200.0).toInt(),
+            (agent.blu * 200.0).toInt());
         ctx.beginPath();
         ctx.arc(agent.pos.x, agent.pos.y, config.BOTRADIUS, 0.0, 2 * PI);
         ctx.fill();
