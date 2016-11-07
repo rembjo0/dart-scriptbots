@@ -8,7 +8,6 @@ void main() {
 
   HtmlElement fpsOuput = querySelector("#fpsOut");
   HtmlElement simSpeedOutput = querySelector("#simSpeedOutput");
-  HtmlElement seasonOutput = querySelector("#seasonOutput");
 
   CanvasElement mainCanvas = querySelector('#mainCanvas');
   CanvasRenderingContext2D ctx = mainCanvas.getContext('2d');
@@ -99,13 +98,6 @@ void main() {
     }
   }
 
-  void updateSeasonOutput () {
-    seasonOutput.text = "Season factor: ${world.foodSeasonFactor}";
-  }
-
-  int seasonCounter = 0;
-  updateSeasonOutput();
-
   void gameLoop(time) {
     bool drawFood = true;
 
@@ -113,17 +105,7 @@ void main() {
       view.clearScreen();
     }
 
-
     for (int i=0; i<simSpeed; i++) {
-      seasonCounter++;
-      if (seasonCounter > 10000) {
-        var fsf = world.foodSeasonFactor;
-        world.foodSeasonFactor = fsf < 1.0 ? 1.0 : 0.5;
-        seasonCounter = 0;
-        updateSeasonOutput();
-      }
-
-      world.setClosed(world.numAgents() >= 5);
       world.update();
     }
 

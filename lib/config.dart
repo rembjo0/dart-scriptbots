@@ -5,8 +5,8 @@ const int NUMEYES = 4;
 const int BRAINSIZE = 200;
 const int CONNS = 4;
 
-const int WIDTH = 6000~/2;  //width and height of simulation
-const int HEIGHT = 3000~/2;
+const int WIDTH = 6000;  //width and height of simulation
+const int HEIGHT = 3000;
 
 const int CZ = 50; //cell size in pixels, for food squares. Should divide well into Width Height
 
@@ -27,7 +27,7 @@ const double METAMUTRATE2= 0.05;
 const double FOODINTAKE= 0.002; //how much does every agent consume?
 const double FOODWASTE= 0.001; //how much food disapears if agent eats?
 const double FOODMAX= 0.5; //how much food per cell can there be at max?
-const int FOODADDFREQ=3; //(15)how often does random square get to full food?
+const int FOODADDFREQ= 15; //how often does random square get to full food?
 
 const double FOODTRANSFER= 0.001; //how much is transfered between two agents trading food? per iteration
 const double FOOD_SHARING_DISTANCE= 50.0; //how far away is food shared between bots?

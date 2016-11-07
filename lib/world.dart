@@ -45,7 +45,7 @@ class World {
     //inititalize food layer
     for (int x = 0; x < FW; x++) {
       for (int y = 0; y < FH; y++) {
-        food.set(x, y, random.bet(0.1) ? config.FOODMAX : 0.0);
+        food.set(x, y, 0.0);
       }
     }
 
@@ -53,8 +53,6 @@ class World {
     numHerbivore = new List<int>.filled(200, 0);
     ptr = 0;
   }
-
-  double foodSeasonFactor = 1.0;
 
   void update() {
     modcounter++;
@@ -80,15 +78,10 @@ class World {
       current_epoch++;
     }
 
-    //UPDATE FOOD
-    if (modcounter % config.FOODADDFREQ == 0 && random.bet(foodSeasonFactor)) {
+    if (modcounter % config.FOODADDFREQ == 0) {
       fx = random.nextInt(FW);
       fy = random.nextInt(FH);
-      if (random.bet(0.001)) {
-        food.set(fx, fy, config.FOODMAX);
-      } else {
-        growFood(fx, fy);
-      }
+      food.set(fx, fy, config.FOODMAX);
     }
 
     //reset any counter variables per agent
@@ -204,92 +197,20 @@ class World {
     agents.addAll(newAgents);
 
 
-    if (random.bet(0.0001 )) {
-      print(" -- add random - freak");
-      addRandomBots(1); //every now and then add random bots in
-    }
-
     //add new agents, if environment isn't closed
     if (!CLOSED) {
       //make sure environment is always populated with at least NUMBOTS bots
-      if (agents.length > 2 && agents.length < 10) {
+      if (agents.length < config.NUMBOTS) {
         //add new agent
-        //addRandomBots(1);
-        var l = agents.toList(growable: false)
-          ..sort((a, b) {
-            int c = b.gencount.compareTo(a.gencount); //reverse
-            return c != 0 ? 0 : b.age.compareTo(a.age);
-          });
-
-        Agent x = random.bet(0.5) ? l[0] : l[random.nextInt(l.length ~/ 2)];
-        Agent y = x.reproduce(x.MUTRATE1, x.MUTRATE2);
-        y.gencount--; // -- not a success... more like random
-        print(" -- emergency reproduce ${x.id}:${x.gencount}-${x.age}");
-        agents.add(y);
+        addRandomBots(1);
       }
-      //if (modcounter % 100 == 0) {
-      if (random.bet(0.5)) {
-        print(" -- add random");
-        addRandomBots(1); //every now and then add random bots in
-      } else
-        print(" -- add crossover");
-      addNewByCrossover(); //or by crossover
-      //}
-    }
-  }
-
-  List rCell = [
-     [-1, -1], [0, -1],[1, -1]
-  ,  [-1, 0], [1, 0]
-  ,  [-1, 1], [0, 1], [1, 1]
-  ];
-
-  bool recursiveFoodCellGrow(int x, int y, int level) {
-    if (level > 6 ) return false;
-
-    int c;
-    int r;
-    for(int i=0; i<4; i++) {
-      var p = rCell[random.nextInt(rCell.length)];
-      c = (x+p[0])%food.numColumns;
-      r = (y+p[1])%food.numRows;
-      double pv = food.get(c, r);
-      if (pv < 0.1) {
-        food.set(c, r, 0.2);
-        return true;
+      if (modcounter % 100 == 0) {
+        if (random.fiftyFifty()) {
+          addRandomBots(1); //every now and then add random bots in
+        } else
+          addNewByCrossover(); //or by crossover
       }
     }
-    return recursiveFoodCellGrow(c, r, level+1);
-  }
-
-  void growFood(int x, int y) {
-
-    //if (random.bet(0.001)) {
-    //  food.set(x, y, Math.min(config.FOODMAX, food.get(x,y)+0.2));
-    //  return;
-    //}
-
-    int fx = x;
-    int fy = y;
-    for (int i = 0; i < food.numColumns; i++) {
-      fx = (fx+1) % food.numColumns;
-      for (int j = 0; j < food.numRows; j++) {
-        fy = (fy+1) % food.numRows;
-        double fv = food.get(fx, fy);
-        if (fv > 0.0) {
-          if (fv < config.FOODMAX - 0.1 && random.bet(0.9)) {
-            food.set(fx, fy, Math.min(config.FOODMAX, food.get(x,y)+0.2));
-            return;
-          } else {
-            if (recursiveFoodCellGrow(fx, fy, 0)) {
-              return;
-            }
-          }
-        }
-      }
-    }
-
-    food.set(x, y, Math.min(config.FOODMAX, food.get(x,y)+0.2));
   }
 
   void reset() {
@@ -298,8 +219,9 @@ class World {
   }
 
   void draw(View view, bool drawfood) {
+
     if (drawfood) {
-      view.drawFood(food);
+          view.drawFood(food);
     }
 
     view.drawAgents(agents);
@@ -534,6 +456,7 @@ class World {
       a.inputs[22] = cap(r[3]);
       a.inputs[23] = cap(g[3]);
       a.inputs[24] = cap(b[3]);
+
     });
   }
 
