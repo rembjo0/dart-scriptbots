@@ -220,8 +220,21 @@ class World {
 
   void draw(View view, bool drawfood) {
 
+    /* CENTER VIEW ON AGENT TEST
+    int oldestGen = -1;
+    var a;
+    for (Agent candidate in agents) {
+      if (candidate.gencount > oldestGen) {
+        oldestGen = candidate.gencount;
+        a = candidate;
+      }
+    }
+
+    view.centerSceneAt(a.pos.x.toInt(), a.pos.y.toInt());
+    */
+
     if (drawfood) {
-          view.drawFood(food);
+       view.drawFood(food);
     }
 
     view.drawAgents(agents);

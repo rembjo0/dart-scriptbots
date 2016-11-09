@@ -49,7 +49,6 @@ class Agent {
 
   int selectflag; //is this agent selected?
   double dfood; //what is change in health of this agent due to giving/receiving?
-
   double give; //is this agent attempting to give food to other agent?
 
   static int _nextId = 0;
@@ -98,6 +97,8 @@ class Agent {
     indicator = 0.0;
     gencount = 0;
     selectflag = 0;
+    dfood = 0.0;
+    give = 0.0;
     ir = 0.0;
     ig = 0.0;
     ib = 0.0;

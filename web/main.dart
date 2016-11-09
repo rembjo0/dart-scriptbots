@@ -39,7 +39,7 @@ void main() {
 
   window.onMouseUp.listen((MouseEvent e) {
     if (e.button == 0 && dragStart != null) {
-      view.translate(dragStart, e.client);
+      view.translateScreen(dragStart, e.client);
       dragStart = null;
     }
   });
@@ -49,7 +49,7 @@ void main() {
       var now = new DateTime.now();
       if (now.difference(dragStartTime).inMilliseconds > 100) {
         dragStartTime = now;
-        view.translate(dragStart, e.client);
+        view.translateScreen(dragStart, e.client);
         dragStart = e.client;
       }
     }
@@ -92,7 +92,7 @@ void main() {
     var avgElapsed = elapsedTotal~/frameCount;
     fpsOuput.text = (1000~/avgElapsed).toString();
 
-    if (frameCount > 1000) {
+    if (frameCount > 10) {
       frameCount = 0;
       elapsedTotal = 0;
     }

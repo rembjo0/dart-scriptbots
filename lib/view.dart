@@ -4,6 +4,7 @@ import 'agent.dart';
 import 'foodmatrix.dart';
 
 import 'config.dart' as config;
+import 'helper.dart' show cap;
 
 class _OffscreenCanvas {
   CanvasElement canvas;
@@ -69,10 +70,20 @@ class View {
   }
 
 
-  void translate(Point start, Point end) {
+  void translateScreen(Point start, Point end) {
     Point t = screenToScene(end) - screenToScene(start);
-    _translateX += t.x;
-    _translateY += t.y;
+    setSceneTranslate(_translateX + t.x, _translateY + t.y);
+  }
+
+  void centerSceneAt(int x, int y) {
+    Point s = sceneToScreen(new Point(x, y));
+    Point c = new Point(_width~/2, _height~/2);
+    translateScreen(s, c);
+  }
+
+  void setSceneTranslate(int x, int y) {
+    _translateX = x;
+    _translateY = y;
     _clearAndRedrawAll();
   }
 
@@ -170,7 +181,7 @@ class View {
 
     ctx.save();
     try {
-      ctx.globalAlpha = 0.2;
+      // NO ARTISTIC DRAWING -- ADD LATER ctx.globalAlpha = 0.2;
       ctx.drawImage(foodCanvas.canvas, 0, 0);
     } finally {
       ctx.restore();
@@ -181,14 +192,72 @@ class View {
     ctx.save();
     try {
       _setViewport();
-      //ctx.setStrokeColorRgb(0, 255, 255);
+
       for (var agent in agents) {
+
+        //draw event indicator
+        if (agent.indicator > 0) {
+          var radius = config.BOTRADIUS + agent.indicator.toInt();
+          ctx.setFillColorRgb(
+              (agent.ir * 200.0).toInt(), (agent.ig * 200.0).toInt(),
+              (agent.ib * 200.0).toInt(), 0.5);
+          ctx.beginPath();
+          ctx.arc(agent.pos.x, agent.pos.y, config.BOTRADIUS + agent.indicator, 0.0, 2 * PI);
+          ctx.fill();
+        }
+
+        // draw body
         ctx.setFillColorRgb(
             (agent.red * 200.0).toInt(), (agent.gre * 200.0).toInt(),
             (agent.blu * 200.0).toInt());
         ctx.beginPath();
         ctx.arc(agent.pos.x, agent.pos.y, config.BOTRADIUS, 0.0, 2 * PI);
         ctx.fill();
+
+        //draw food share
+        if (agent.dfood != 0) {
+          double mag=cap(agent.dfood.abs()/config.FOODTRANSFER/3);
+
+          if(agent.dfood>0)
+            ctx.setStrokeColorRgb(0,(255*mag).toInt(),0); //draw boost as green outline
+          else
+            ctx.setStrokeColorRgb((255*mag).toInt(), 0, 0);
+
+          ctx.beginPath();
+          ctx.lineWidth = 4;
+          ctx.arc(agent.pos.x, agent.pos.y, config.BOTRADIUS+2, 0.0, 2 * PI);
+          ctx.stroke();
+        }
+
+        if (agent.boost) {
+          ctx.lineWidth = 1;
+          ctx.setStrokeColorRgb(0, 0, 255);
+          ctx.arc(agent.pos.x, agent.pos.y, config.BOTRADIUS+1, 0.0, 2 * PI);
+          ctx.stroke();
+        }
+
+
+        //draw eyes
+        ctx.lineWidth = 1;
+        ctx.setStrokeColorRgb(0, 0, 255, 0.5);
+        ctx.beginPath();
+        for(int q=0;q<config.NUMEYES;q++) {
+          ctx.moveTo(agent.pos.x,agent.pos.y);
+          double aa= agent.angle+agent.eyedir[q];
+          ctx.lineTo(agent.pos.x+(config.BOTRADIUS*4)*cos(aa),
+              agent.pos.y+(config.BOTRADIUS*4)*sin(aa));
+        }
+        ctx.stroke();
+
+        //draw spike
+        double r = config.BOTRADIUS;
+        ctx.lineWidth = 2;
+        ctx.setStrokeColorRgb(200,0,0);
+        ctx.beginPath();
+        ctx.moveTo(agent.pos.x,agent.pos.y);
+        ctx.lineTo(agent.pos.x+(3*r*agent.spikeLength)*cos(agent.angle),agent.pos.y+(3*r*agent.spikeLength)*sin(agent.angle));
+        ctx.stroke();
+
       }
     } finally {
       ctx.restore();
