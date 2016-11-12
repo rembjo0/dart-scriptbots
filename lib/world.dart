@@ -388,7 +388,7 @@ class World {
           //hearing. Listening to other agents
           hearaccum += a2.soundmul * (config.DIST - d) / config.DIST;
 
-          //FIXME PORT MOVE TO HELPER CLASS?
+          //FIXME PORT MOVE TO HELPER CLASS? IS THIS CORRECT?
           var get_angle = (Vector2 v) {
             if (v.x == 0 && v.y == 0) return 0.0;
             return Math.atan2(v.y, v.x);

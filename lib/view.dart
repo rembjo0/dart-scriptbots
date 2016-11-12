@@ -5,6 +5,7 @@ import 'foodmatrix.dart';
 
 import 'config.dart' as config;
 import 'helper.dart' show cap;
+import 'package:vector_math/vector_math.dart';
 
 class _OffscreenCanvas {
   CanvasElement canvas;
@@ -244,8 +245,9 @@ class View {
         for(int q=0;q<config.NUMEYES;q++) {
           ctx.moveTo(agent.pos.x,agent.pos.y);
           double aa= agent.angle+agent.eyedir[q];
+          //PORT: must use -sin (lefthanded, righthanded coord system thing?)
           ctx.lineTo(agent.pos.x+(config.BOTRADIUS*4)*cos(aa),
-              agent.pos.y+(config.BOTRADIUS*4)*sin(aa));
+              agent.pos.y+(config.BOTRADIUS*4)*-sin(aa));
         }
         ctx.stroke();
 
@@ -255,9 +257,9 @@ class View {
         ctx.setStrokeColorRgb(200,0,0);
         ctx.beginPath();
         ctx.moveTo(agent.pos.x,agent.pos.y);
-        ctx.lineTo(agent.pos.x+(3*r*agent.spikeLength)*cos(agent.angle),agent.pos.y+(3*r*agent.spikeLength)*sin(agent.angle));
+        //PORT: must use -sin (lefhenaded, rightanded coord system thing?)
+        ctx.lineTo(agent.pos.x+(3*r*agent.spikeLength)*cos(agent.angle),agent.pos.y+(3*r*agent.spikeLength)*-sin(agent.angle));
         ctx.stroke();
-
       }
     } finally {
       ctx.restore();
