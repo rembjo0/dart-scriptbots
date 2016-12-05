@@ -55,18 +55,52 @@ void main() {
     }
   });
 
+  const KEY_PAGE_UP = 33;
+  const KEY_PAGE_DOWN = 34;
+  const KEY_HOME = 36;
+  const KEY_A = 65;
+  const KEY_C = 67;
+  const KEY_F = 70;
+  const KEY_H = 72;
+  const KEY_Q = 81;
+
   int simSpeed = 1;
+  bool drawFood = true;
+  World world = new World.create();
+
+
   window.onKeyUp.listen((KeyboardEvent e) {
     switch (e.which) {
-      case 33:
+      case KEY_PAGE_UP:
         if (simSpeed < 16) simSpeed *= 2;
         break;
-      case 34:
+      case KEY_PAGE_DOWN:
         if (simSpeed > 1) simSpeed ~/= 2;
         break;
-      case 36:
+      case KEY_HOME:
         simSpeed = 1;
         break;
+      case KEY_F:
+        drawFood = !drawFood;
+        break;
+      case KEY_C:
+        world.setClosed(!world.isClosed());
+        print("-- world closed = ${world.isClosed()}");
+        break;
+      case KEY_A:
+        for (int i=0; i<10; i++) world.addNewByCrossover();
+        print(" -- added new bots by crossover");
+        break;
+      case KEY_Q:
+        for (int i=0; i<10; i++) world.addCarnivore();
+        print(" -- added new carnivores");
+        break;
+      case KEY_H:
+        for (int i=0; i<10; i++) world.addHerbivore();
+        print("-- added new herbivores");
+        break;
+      default:
+        print("-- no action for key: ${e.which}");
     }
 
     simSpeedOutput.text = "x${simSpeed}";
@@ -74,8 +108,6 @@ void main() {
 
 
   resizeToWindow();
-
-  World world = new World.create();
 
   int  now () => new DateTime.now().millisecondsSinceEpoch;
   int lastFrameTime = now();
@@ -99,14 +131,13 @@ void main() {
   }
 
   void gameLoop(time) {
-    bool drawFood = true;
-
-    if (!drawFood) {
-      view.clearScreen();
-    }
 
     for (int i=0; i<simSpeed; i++) {
       world.update();
+    }
+
+    if (!drawFood) {
+      view.clearScreen();
     }
 
     world.draw(view, drawFood);
