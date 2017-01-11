@@ -5,8 +5,8 @@ const int NUMEYES = 4;
 const int BRAINSIZE = 200;
 const int CONNS = 4;
 
-const int WIDTH = 6000;  //width and height of simulation
-const int HEIGHT = 3000;
+const int WIDTH = 6000*2;  //width and height of simulation
+const int HEIGHT = 3000*2;
 
 const int CZ = 50; //cell size in pixels, for food squares. Should divide well into Width Height
 

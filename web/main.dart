@@ -63,14 +63,21 @@ void main() {
   const KEY_F = 70;
   const KEY_H = 72;
   const KEY_Q = 81;
+  const KEY_1 = 49;
+  const KEY_2 = 50;
 
   int simSpeed = 1;
-  bool drawFood = true;
   World world = new World.create();
 
 
   window.onKeyUp.listen((KeyboardEvent e) {
     switch (e.which) {
+      case KEY_1:
+        view.reduceBackgroundAlpha();
+        break;
+      case KEY_2:
+        view.increaseBackgroundAlpha();
+        break;
       case KEY_PAGE_UP:
         if (simSpeed < 16) simSpeed *= 2;
         break;
@@ -81,7 +88,7 @@ void main() {
         simSpeed = 1;
         break;
       case KEY_F:
-        drawFood = !drawFood;
+        view.drawFoodEnabled = !view.drawFoodEnabled;
         break;
       case KEY_C:
         world.setClosed(!world.isClosed());
@@ -136,11 +143,7 @@ void main() {
       world.update();
     }
 
-    if (!drawFood) {
-      view.clearScreen();
-    }
-
-    world.draw(view, drawFood);
+    world.draw(view);
 
     updateFPS();
 

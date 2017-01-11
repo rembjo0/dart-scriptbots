@@ -24,6 +24,7 @@ class FoodMatrix {
     if (_dirtyCells.length > limit) {
       _allDirty = true;
       _dirtyCells = [];
+      print("-- food matrix, dirty limit reached. Not tracking.");
     } else {
       //mark as dirty, note... we do not check duplicates, should be few
       _dirtyCells.add(new Point(c, r));

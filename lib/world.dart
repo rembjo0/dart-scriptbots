@@ -218,7 +218,7 @@ class World {
     addRandomBots(config.NUMBOTS);
   }
 
-  void draw(View view, bool drawfood) {
+  void draw(View view) {
 
     /* CENTER VIEW ON AGENT TEST
     int oldestGen = -1;
@@ -233,10 +233,7 @@ class World {
     view.centerSceneAt(a.pos.x.toInt(), a.pos.y.toInt());
     */
 
-    if (drawfood) {
-       view.drawFood(food);
-    }
-
+    view.drawFood(food);
     view.drawAgents(agents);
     view.drawMisc();
   }

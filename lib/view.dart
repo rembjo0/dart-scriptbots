@@ -59,6 +59,7 @@ class View {
   int _width = 0;
   int _height = 0;
 
+  double _backgroundAlpha = 1.0;
   double _scale = 1.0;
   double _zoomFactor = 1.0;
   int _translateX = 0;
@@ -66,9 +67,25 @@ class View {
 
   _FoodCanvas foodCanvas;
 
+  bool _drawFoodEnabled = true;
+
   View(this.ctx) {
     foodCanvas = new _FoodCanvas();
   }
+
+
+  void reduceBackgroundAlpha() {
+    _backgroundAlpha = _backgroundAlpha * 0.75;
+    if (_backgroundAlpha < 0.1) _backgroundAlpha = 0.05;
+    print("-- backgroundAlpha ${_backgroundAlpha}");
+  }
+
+  void increaseBackgroundAlpha() {
+    _backgroundAlpha = _backgroundAlpha * 1.25;
+    if (_backgroundAlpha > 1.0) _backgroundAlpha = 1.0;
+    print("-- backgroundAlpha ${_backgroundAlpha}");
+  }
+
 
 
   void translateScreen(Point start, Point end) {
@@ -146,9 +163,41 @@ class View {
     _setViewportOnContex(ctx);
   }
 
+  bool get drawFoodEnabled => _drawFoodEnabled;
+
+  void set drawFoodEnabled (bool b) {
+    _drawFoodEnabled = b;
+ }
+
+
+ void renderEmptyFoodCanvas () {
+   foodCanvas.ctx.save();
+   try {
+     foodCanvas.ctx.setFillColorRgb(255, 255, 255);
+     foodCanvas.ctx.fillRect(0, 0, foodCanvas.width, foodCanvas.height);
+   } finally {
+     foodCanvas.ctx.restore();
+   }
+ }
 
   void drawFood(FoodMatrix food) {
-    var renderCell = (x, y, q) {
+
+    if (drawFoodEnabled)
+      renderFoodCells(food);
+    else
+      renderEmptyFoodCanvas();
+
+    ctx.save();
+    try {
+      ctx.globalAlpha = _backgroundAlpha;
+      ctx.drawImage(foodCanvas.canvas, 0, 0);
+    } finally {
+      ctx.restore();
+    }
+  }
+
+  void renderFoodCells(FoodMatrix food) {
+       var renderCell = (x, y, q) {
       double v = 0.5 * q / config.FOODMAX;
       var f = (255.0 * (1.0 - v)).toInt();
       foodCanvas.ctx.setFillColorRgb(f, f, f);
@@ -178,14 +227,6 @@ class View {
       foodCanvas.redrawAll = false;
     } finally {
       foodCanvas.ctx.restore();
-    }
-
-    ctx.save();
-    try {
-      // NO ARTISTIC DRAWING -- ADD LATER ctx.globalAlpha = 0.2;
-      ctx.drawImage(foodCanvas.canvas, 0, 0);
-    } finally {
-      ctx.restore();
     }
   }
 
