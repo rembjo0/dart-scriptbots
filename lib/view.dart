@@ -1,7 +1,7 @@
 import 'dart:html';
 import 'dart:math';
 import 'agent.dart';
-import 'foodmatrix.dart';
+import 'foodviewmodel.dart';
 
 import 'config.dart' as config;
 import 'helper.dart' show cap;
@@ -61,8 +61,6 @@ class View {
   int _translateY = 0;
 
   _FoodCanvas foodCanvas;
-
-  bool _drawFoodEnabled = true;
 
   View(this.ctx) {
     foodCanvas = new _FoodCanvas();
@@ -156,13 +154,6 @@ class View {
     _setViewportOnContex(ctx);
   }
 
-  bool get drawFoodEnabled => _drawFoodEnabled;
-
-  void set drawFoodEnabled (bool b) {
-    _drawFoodEnabled = b;
- }
-
-
  void renderEmptyFoodCanvas () {
    foodCanvas.ctx.save();
    try {
@@ -173,9 +164,9 @@ class View {
    }
  }
 
-  void drawFood(FoodMatrix food) {
+  void drawFood(FoodViewModel food) {
 
-    if (drawFoodEnabled)
+    if (food.isFoodDrawingEnabled())
       renderFoodCells(food);
     else
       renderEmptyFoodCanvas();
@@ -189,7 +180,7 @@ class View {
     }
   }
 
-  void renderFoodCells(FoodMatrix food) {
+  void renderFoodCells(FoodViewModel food) {
        var renderCell = (x, y, q) {
       double v = 0.5 * q / config.FOODMAX;
       var f = (255.0 * (1.0 - v)).toInt();
@@ -206,9 +197,9 @@ class View {
       if (foodCanvas.redrawAll || food.allDirty) {
         foodCanvas.ctx.setFillColorRgb(255, 255, 255);
         foodCanvas.ctx.fillRect(0, 0, foodCanvas.width, foodCanvas.height);
-        for (int c = 0; c < food.numColumns; c++)
-          for (int r = 0; r < food.numRows; r++)
-            renderCell(c, r, food.get(c, r));
+        for (int x = 0; x < food.width; x++)
+          for (int y = 0; y < food.height; y++)
+            renderCell(x, y, food.get(x, y));
 
         food.clearAllDirty();
       } else {

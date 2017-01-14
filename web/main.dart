@@ -12,7 +12,9 @@ void main() {
   CanvasElement mainCanvas = querySelector('#mainCanvas');
   CanvasRenderingContext2D ctx = mainCanvas.getContext('2d');
 
+  int simSpeed = 1;
   View view = new View(ctx);
+  World world = new World.create();
 
   var resizeToWindow = () {
     mainCanvas.width = window.innerWidth;
@@ -66,10 +68,6 @@ void main() {
   const KEY_1 = 49;
   const KEY_2 = 50;
 
-  int simSpeed = 1;
-  World world = new World.create();
-
-
   window.onKeyUp.listen((KeyboardEvent e) {
     switch (e.which) {
       case KEY_1:
@@ -88,7 +86,7 @@ void main() {
         simSpeed = 1;
         break;
       case KEY_F:
-        view.drawFoodEnabled = !view.drawFoodEnabled;
+        world.toggleFoodDrawing();
         break;
       case KEY_C:
         world.setClosed(!world.isClosed());

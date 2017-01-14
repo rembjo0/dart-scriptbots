@@ -1,34 +1,52 @@
-
 import 'dart:math';
-import 'helper.dart';
+import 'package:scriptbots/foodmodel.dart';
 
-class FoodMatrix {
+class FoodViewModel {
 
-  final Array2<double> _store;
+  final FoodModel _food;
 
   List<Point<int>> _dirtyCells = [];
   bool _allDirty = true;
 
-  FoodMatrix(int columns, int rows) : _store = new Array2(columns, rows);
+  bool _drawFoodEnabled = true;
 
-  void set(int c, int r, double v) {
-    _store.set(c, r, v);
+  FoodViewModel(this._food) {
+    _food.foodListener = this.cellModifiedListener;
+  }
+
+  int get width => _food.width;
+
+  int get height => _food.height;
+
+
+  bool isFoodDrawingEnabled()  => _drawFoodEnabled;
+
+  void setFoodDrawingEnabled (bool b) {
+    _drawFoodEnabled = b;
+    _setAllDirty();
+  }
+
+  void cellModifiedListener(int c, int r) {
 
     if (_allDirty) {
       return;
     }
 
-    int limit = ((_store.numColumns*_store.numRows)*0.75).toInt();
+    int limit = ((width*height)*0.75).toInt();
 
     // If too many dirty cells, then just mark all as dirty and stop tracking.
     if (_dirtyCells.length > limit) {
-      _allDirty = true;
-      _dirtyCells = [];
-      print("-- food matrix, dirty limit reached. Not tracking.");
+      _setAllDirty();
+      print("-- food view, dirty limit reached. Not tracking.");
     } else {
       //mark as dirty, note... we do not check duplicates, should be few
       _dirtyCells.add(new Point(c, r));
     }
+  }
+
+  void _setAllDirty() {
+    _allDirty = true;
+    _dirtyCells = [];
   }
 
   /**
@@ -52,11 +70,8 @@ class FoodMatrix {
   }
 
   double get(int c, int r) {
-    return _store.get(c, r);
+    return _food.get(c, r);
   }
 
-  int get numColumns => _store.numColumns;
-
-  int get numRows => _store.numRows;
 
 }

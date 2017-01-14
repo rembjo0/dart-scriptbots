@@ -12,7 +12,7 @@ class RandomFoodModel extends FoodModel {
       int height,
       this._updateFreq,
       this._foodMax,
-      Randomization _random
+      this._random
       ) : super(width, height);
 
   @override

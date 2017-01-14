@@ -6,6 +6,7 @@ import 'helper.dart';
 import 'randomization.dart';
 import 'view.dart';
 import 'foodmodel.dart';
+import 'foodviewmodel.dart';
 import 'random_foodmodel.dart';
 
 class World {
@@ -13,6 +14,7 @@ class World {
   final Randomization random;
 
   FoodModel food;
+  FoodViewModel foodView;
 
   List<int> numCarnivore;
   List<int> numHerbivore;
@@ -43,7 +45,7 @@ class World {
         random);
 
     food.populate();
-    //FIXME --- add food tracking...
+    foodView = new FoodViewModel(food);
 
     modcounter = 0;
     current_epoch = 0;
@@ -55,6 +57,14 @@ class World {
     numCarnivore = new List<int>.filled(200, 0);
     numHerbivore = new List<int>.filled(200, 0);
     ptr = 0;
+  }
+
+  void setFoodDrawingEnabled(bool b) {
+    foodView.setFoodDrawingEnabled(b);
+  }
+
+  void toggleFoodDrawing () {
+    foodView.setFoodDrawingEnabled(!foodView.isFoodDrawingEnabled());
   }
 
   void update() {
@@ -232,7 +242,7 @@ class World {
     view.centerSceneAt(a.pos.x.toInt(), a.pos.y.toInt());
     */
 
-    view.drawFood(food);
+    view.drawFood(foodView);
     view.drawAgents(agents);
     view.drawMisc();
   }
