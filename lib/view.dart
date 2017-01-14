@@ -5,7 +5,6 @@ import 'foodmatrix.dart';
 
 import 'config.dart' as config;
 import 'helper.dart' show cap;
-import 'package:vector_math/vector_math.dart';
 
 class _OffscreenCanvas {
   CanvasElement canvas;
@@ -17,7 +16,6 @@ class _OffscreenCanvas {
   }
 
   int get width => canvas.width;
-
   int get height => canvas.height;
 
   void canvasResize(int width, int height) {
@@ -35,8 +33,6 @@ class _OffscreenCanvas {
       ctx.restore();
     }
   }
-
-
 }
 
 
@@ -50,7 +46,6 @@ class _FoodCanvas extends _OffscreenCanvas {
   }
 }
 
-//typedef void CtxFunc(CanvasRenderingContext2D ctx);
 
 class View {
 
@@ -85,8 +80,6 @@ class View {
     if (_backgroundAlpha > 1.0) _backgroundAlpha = 1.0;
     print("-- backgroundAlpha ${_backgroundAlpha}");
   }
-
-
 
   void translateScreen(Point start, Point end) {
     Point t = screenToScene(end) - screenToScene(start);

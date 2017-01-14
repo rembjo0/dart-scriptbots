@@ -1,4 +1,4 @@
-library food_model;
+library foodmodel;
 import 'helper.dart';
 
 typedef void FoodListenerFnc(int x, int y);
@@ -14,6 +14,8 @@ abstract class FoodModel {
   int get width => _store.numColumns;
 
   int get height => _store.numRows;
+
+  void populate();
 
   void update(int modCounter);
 

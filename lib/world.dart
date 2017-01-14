@@ -5,11 +5,14 @@ import 'config.dart' as config;
 import 'helper.dart';
 import 'randomization.dart';
 import 'view.dart';
-import 'foodmatrix.dart';
+import 'foodmodel.dart';
+import 'random_foodmodel.dart';
 
 class World {
 
   final Randomization random;
+
+  FoodModel food;
 
   List<int> numCarnivore;
   List<int> numHerbivore;
@@ -31,23 +34,23 @@ class World {
 
     int numColumns = config.WIDTH ~/ config.CZ;
     int numRows = config.HEIGHT ~/ config.CZ;
-    food = new FoodMatrix(numColumns, numRows);
+
+    food = new RandomFoodModel(
+        numColumns,
+        numRows,
+        config.FOODADDFREQ,
+        config.FOODMAX,
+        random);
+
+    food.populate();
+    //FIXME --- add food tracking...
 
     modcounter = 0;
     current_epoch = 0;
     idcounter = 0;
-    FW = config.WIDTH ~/ config.CZ;
-    FH = config.HEIGHT ~/ config.CZ;
     CLOSED = false;
 
     addRandomBots(config.NUMBOTS);
-
-    //inititalize food layer
-    for (int x = 0; x < FW; x++) {
-      for (int y = 0; y < FH; y++) {
-        food.set(x, y, 0.0);
-      }
-    }
 
     numCarnivore = new List<int>.filled(200, 0);
     numHerbivore = new List<int>.filled(200, 0);
@@ -78,11 +81,7 @@ class World {
       current_epoch++;
     }
 
-    if (modcounter % config.FOODADDFREQ == 0) {
-      fx = random.nextInt(FW);
-      fy = random.nextInt(FH);
-      food.set(fx, fy, config.FOODMAX);
-    }
+   food.update(modcounter);
 
     //reset any counter variables per agent
     agents.forEach((agent) {
@@ -680,12 +679,5 @@ class World {
 
   List<Agent> agents = [];
 
-  // food
-  int FW;
-  int FH;
-  int fx;
-  int fy;
-
-  FoodMatrix food;
   bool CLOSED; //if environment is closed, then no random bots are added per time interval
 }
