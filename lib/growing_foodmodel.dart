@@ -34,19 +34,13 @@ class GrowingFoodModel extends FoodModel {
       }
     }
 
-    for (int i=0; i<width*height; i++) {
+    for (int i=0; i<(width*height)~/2; i++) {
       growFoodAtRandomPoint();
     }
   }
 
   @override
   void update(int modCounter) {
-    if (modCounter % _updateFreq == 0) {
-      int fx = _random.nextInt(width);
-      int fy = _random.nextInt(height);
-      set(fx, fy, _foodMax);
-    }
-
     if (modCounter % _updateFreq == 0 && _random.bet(seasonFactor)) {
       growFoodAtRandomPoint();
     }
