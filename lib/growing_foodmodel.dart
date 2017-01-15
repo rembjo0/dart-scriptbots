@@ -2,13 +2,29 @@ import 'dart:math' as Math;
 import 'package:scriptbots/foodmodel.dart';
 import 'randomization.dart';
 
+class Season {
+  final String name;
+  final double factor;
+
+  Season(this.name, this.factor);
+
+  @override
+  String toString () => "${name}:${factor}";
+}
+
+final Season SUMMER = new Season("summer", 1.0);
+final Season WINTER = new Season("winter", 0.2);
+
 class GrowingFoodModel extends FoodModel {
 
   Randomization _random;
   int _updateFreq;
   double _foodMax;
 
-  double seasonFactor = 1.0;
+  List<Season> seasons = [SUMMER, WINTER];
+  int    seasonLength = 10000; //counted as calls to update
+  int    seasonIndex = 0;
+  int    seasonCounter = 0;
 
   final List rCell = new List.unmodifiable([
     [-1, -1], [0, -1], [1, -1]
@@ -41,9 +57,24 @@ class GrowingFoodModel extends FoodModel {
 
   @override
   void update(int modCounter) {
-    if (modCounter % _updateFreq == 0 && _random.bet(seasonFactor)) {
+
+    Season season = _updateSeason();
+
+    if (modCounter % _updateFreq == 0 && _random.bet(season.factor)) {
       growFoodAtRandomPoint();
     }
+  }
+
+  Season _updateSeason() {
+    Season season = seasons[seasonIndex];
+    seasonCounter++;
+    if (seasonCounter > seasonLength) {
+      seasonIndex = (seasonIndex+1) % seasons.length;
+      seasonCounter = 0;
+      season = seasons[seasonIndex];
+      print("-- season changed: ${season}");
+    }
+    return season;
   }
 
   void growFoodAtRandomPoint() {

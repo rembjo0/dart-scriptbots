@@ -27,7 +27,7 @@ const double METAMUTRATE2= 0.05;
 const double FOODINTAKE= 0.002; //how much does every agent consume?
 const double FOODWASTE= 0.001; //how much food disapears if agent eats?
 const double FOODMAX= 0.5; //how much food per cell can there be at max?
-const int FOODADDFREQ= 15; //how often does random square get to full food?
+const int FOODADDFREQ= 4; //(15 default) how often does random square get to full food?
 
 const double FOODTRANSFER= 0.001; //how much is transfered between two agents trading food? per iteration
 const double FOOD_SHARING_DISTANCE= 50.0; //how far away is food shared between bots?
