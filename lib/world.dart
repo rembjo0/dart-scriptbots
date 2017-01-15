@@ -7,7 +7,8 @@ import 'randomization.dart';
 import 'view.dart';
 import 'foodmodel.dart';
 import 'foodviewmodel.dart';
-import 'random_foodmodel.dart';
+import 'uniform_foodmodel.dart';
+import 'growing_foodmodel.dart';
 
 class World {
 
@@ -37,7 +38,9 @@ class World {
     int numColumns = config.WIDTH ~/ config.CZ;
     int numRows = config.HEIGHT ~/ config.CZ;
 
-    food = new RandomFoodModel(
+
+    //food = new UniformFoodModel(
+    food = new GrowingFoodModel(
         numColumns,
         numRows,
         config.FOODADDFREQ,

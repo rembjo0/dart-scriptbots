@@ -1,13 +1,13 @@
 import 'package:scriptbots/foodmodel.dart';
 import 'randomization.dart';
 
-class RandomFoodModel extends FoodModel {
+class UniformFoodModel extends FoodModel {
 
   Randomization _random;
   int _updateFreq;
   double _foodMax;
 
-  RandomFoodModel(
+  UniformFoodModel(
       int width,
       int height,
       this._updateFreq,
