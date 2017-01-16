@@ -2,6 +2,17 @@ import 'dart:math' as Math;
 import 'package:scriptbots/foodmodel.dart';
 import 'randomization.dart';
 
+final List _rCell = new List.unmodifiable([
+  [-1, -1],
+  [0, -1],
+  [1, -1],
+  [-1, 0],
+  [1, 0],
+  [-1, 1],
+  [0, 1],
+  [1, 1]
+]);
+
 class Season {
   final String name;
   final double factor;
@@ -9,37 +20,27 @@ class Season {
   Season(this.name, this.factor);
 
   @override
-  String toString () => "${name}:${factor}";
+  String toString() => "${name}:${factor}";
 }
 
 final Season SUMMER = new Season("summer", 1.0);
 final Season WINTER = new Season("winter", 0.2);
 
 class GrowingFoodModel extends FoodModel {
-
   Randomization _random;
   int _updateFreq;
   double _foodMax;
 
   List<Season> seasons = [SUMMER, WINTER];
-  int    seasonLength = 10000; //counted as calls to update
-  int    seasonIndex = 0;
-  int    seasonCounter = 0;
-
-  final List rCell = new List.unmodifiable([
-    [-1, -1], [0, -1], [1, -1]
-    , [-1, 0], [1, 0]
-    , [-1, 1], [0, 1], [1, 1]
-  ]);
-
+  int seasonLength = 10000; //counted as calls to update
+  int seasonIndex = 0;
+  int seasonCounter = 0;
 
   GrowingFoodModel(
-      int width,
-      int height,
-      this._updateFreq,
-      this._foodMax,
-      this._random
-      ) : super(width, height);
+      int width, int height, this._updateFreq, this._foodMax, this._random)
+      : super(width, height);
+
+  int _nextInt(int x) => _random.nextInt(x);
 
   @override
   void populate() {
@@ -50,14 +51,13 @@ class GrowingFoodModel extends FoodModel {
       }
     }
 
-    for (int i=0; i<(width*height)~/2; i++) {
+    for (int i = 0; i < (width * height) ~/ 4; i++) {
       growFoodAtRandomPoint();
     }
   }
 
   @override
   void update(int modCounter) {
-
     Season season = _updateSeason();
 
     if (modCounter % _updateFreq == 0 && _random.bet(season.factor)) {
@@ -69,7 +69,7 @@ class GrowingFoodModel extends FoodModel {
     Season season = seasons[seasonIndex];
     seasonCounter++;
     if (seasonCounter > seasonLength) {
-      seasonIndex = (seasonIndex+1) % seasons.length;
+      seasonIndex = (seasonIndex + 1) % seasons.length;
       seasonCounter = 0;
       season = seasons[seasonIndex];
       print("-- season changed: ${season}");
@@ -84,15 +84,12 @@ class GrowingFoodModel extends FoodModel {
     growOneCell(fx, fy);
   }
 
-  int _nextInt (int x) => _random.nextInt(x);
-
   bool recursiveFoodCellGrow(int x, int y, int level) {
     if (level > 100) return false;
 
-    int c;
-    int r;
+    int c, r;
     for (int i = 0; i < 4; i++) {
-      var p = rCell[_nextInt(rCell.length)];
+      var p = _rCell[_nextInt(_rCell.length)];
       c = (x + p[0]) % width;
       r = (y + p[1]) % height;
       double pv = get(c, r);
@@ -105,21 +102,16 @@ class GrowingFoodModel extends FoodModel {
   }
 
   void growOneCell(int x, int y) {
-    //if (random.bet(0.001)) {
-    //  food.set(x, y, Math.min(config.FOODMAX, food.get(x,y)+0.2));
-    //  return;
-    //}
-
     int fx = x;
     int fy = y;
-    for (int i = 0; i < width~/8; i++) {
+    for (int i = 0; i < width ~/ 8; i++) {
       fx = (fx + 1) % width;
-      for (int j = 0; j < height~/8; j++) {
+      for (int j = 0; j < height ~/ 8; j++) {
         fy = (fy + 1) % height;
         double fv = get(fx, fy);
         if (fv > 0.0) {
           if (fv < _foodMax - 0.2 && _random.bet(0.9)) {
-            set(fx, fy, Math.min(_foodMax, get(x, y) + 0.2));
+            set(fx, fy, Math.min(_foodMax, fv + 0.2));
             return;
           } else {
             if (recursiveFoodCellGrow(fx, fy, 0)) {
@@ -132,5 +124,4 @@ class GrowingFoodModel extends FoodModel {
 
     set(x, y, Math.min(_foodMax, get(x, y) + 0.2));
   }
-
 }
