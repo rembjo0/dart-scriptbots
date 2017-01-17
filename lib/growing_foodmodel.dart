@@ -16,23 +16,25 @@ final List _rCell = new List.unmodifiable([
 class Season {
   final String name;
   final double factor;
+  final int seasonLength;
 
-  Season(this.name, this.factor);
+  Season(this.name, this.factor, this.seasonLength);
 
   @override
   String toString() => "${name}:${factor}";
 }
 
-final Season SUMMER = new Season("summer", 1.0);
-final Season WINTER = new Season("winter", 0.2);
+final Season SPRING = new Season("spring", 0.3, 5000);
+final Season SUMMER = new Season("summer", 1.0, 5000);
+final Season AUTUMN = new Season("autumn", 0.2, 5000);
+final Season WINTER = new Season("winter", 0.05, 5000);
 
 class GrowingFoodModel extends FoodModel {
   Randomization _random;
   int _updateFreq;
   double _foodMax;
 
-  List<Season> seasons = [SUMMER, WINTER];
-  int seasonLength = 10000; //counted as calls to update
+  List<Season> seasons = [SPRING, SUMMER, AUTUMN, WINTER];
   int seasonIndex = 0;
   int seasonCounter = 0;
 
@@ -68,7 +70,7 @@ class GrowingFoodModel extends FoodModel {
   Season _updateSeason() {
     Season season = seasons[seasonIndex];
     seasonCounter++;
-    if (seasonCounter > seasonLength) {
+    if (seasonCounter > season.seasonLength) {
       seasonIndex = (seasonIndex + 1) % seasons.length;
       seasonCounter = 0;
       season = seasons[seasonIndex];

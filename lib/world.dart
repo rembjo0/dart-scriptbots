@@ -87,7 +87,7 @@ class World {
       if (ptr == numHerbivore.length) ptr = 0;
     }
 
-    if (modcounter % 1000 == 0) writeReport();
+    if (modcounter % 5000 == 0) writeReport();
 
     if (modcounter >= 10000) {
       modcounter = 0;
@@ -647,24 +647,21 @@ class World {
   }
 
   void writeReport() {
-    //FIXME - NOT PORTED - ORIGINAL CODE WAS COMMENTED OUT
-    //TODO fix reporting
-    //save all kinds of nice data stuff
-    //     int numherb=0;
-    //     int numcarn=0;
-    //     int topcarn=0;
-    //     int topherb=0;
-    //     for(int i=0;i<agents.size();i++){
-    //         if(agents[i].herbivore>0.5) numherb++;
-    //         else numcarn++;
-    //
-    //         if(agents[i].herbivore>0.5 && agents[i].gencount>topherb) topherb= agents[i].gencount;
-    //         if(agents[i].herbivore<0.5 && agents[i].gencount>topcarn) topcarn= agents[i].gencount;
-    //     }
-    //
-    //     FILE* fp = fopen("report.txt", "a");
-    //     fprintf(fp, "%i %i %i %i\n", numherb, numcarn, topcarn, topherb);
-    //     fclose(fp);
+         int numherb=0;
+         int numcarn=0;
+         int topcarn=0;
+         int topherb=0;
+
+         agents.forEach((agent){
+             if(agent.herbivore>0.5) numherb++;
+             else numcarn++;
+
+             if(agent.herbivore>0.5 && agent.gencount>topherb) topherb= agent.gencount;
+             if(agent.herbivore<0.5 && agent.gencount>topcarn) topcarn= agent.gencount;
+         });
+
+         print("Herbivores: ${numherb} - top: ${topherb}");
+         print("Carnivores: ${numcarn} - top ${topcarn}");
   }
 
   void reproduce(Agent agent, double MR, double MR2, List<Agent> newAgents) {
