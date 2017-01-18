@@ -262,6 +262,15 @@ class View {
           ctx.stroke();
         }
 
+        if (agent.herbivore < 0.5) {
+          ctx.beginPath();
+          ctx.lineWidth = 1;
+          ctx.setStrokeColorRgb(255, 0, 0);
+          double endAngle = (0.5 + agent.herbivore) * 1.8 * PI;
+          ctx.arc(agent.pos.x, agent.pos.y, config.BOTRADIUS+5, -agent.angle+0.3, -agent.angle+0.3 + endAngle);
+          ctx.stroke();
+        }
+
 
         //draw eyes
         ctx.lineWidth = 1;
